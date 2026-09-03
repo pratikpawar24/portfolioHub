@@ -47,4 +47,5 @@ jobs:
           cache: maven
 
       - name: Verify with Maven
+        working-directory: ./backend
         run: mvn -B --no-transfer-progress clean verify
