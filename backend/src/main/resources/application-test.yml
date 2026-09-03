@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  security:
+    user:
+      name: disabled
+      password: disabled
+app:
+  security:
+    jwt:
+      secret: test-secret-that-is-at-least-32-characters-long-12345
+      issuer: portfoliohub-test
+      access-token-ttl: PT15M
+      refresh-token-ttl: P30D

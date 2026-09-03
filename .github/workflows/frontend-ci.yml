@@ -1,0 +1,77 @@
+name: Frontend CI
+
+# Belongs at the MONOREPO ROOT (.github/workflows/), not inside frontend/ —
+# GitHub only discovers workflows there. Path-filtered so backend-only
+# changes don't trigger a frontend build, and vice versa (see the sibling
+# backend-ci.yml the backend chat owns).
+#
+# Assumes the repo layout in Architecture.md §14: a top-level frontend/
+# folder. If this project ends up somewhere else, update working-directory,
+# cache-dependency-path and the two `paths:` filters below together.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: frontend
+
+# Cancel superseded runs on the same branch/PR instead of queuing them.
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Lint, type-check, build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Next.js's own package.json declares engines.node >=20.9.0 —
+          # lts/* tracks whichever LTS is current rather than pinning a
+          # number here that goes stale.
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: frontend/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/**/*.[jt]s', 'frontend/**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (includes TypeScript check)
+        run: npm run build
+
+  # No test job yet: there is no test runner installed and no test script
+  # in package.json (see PHASE_1_NOTES.md §5/§6). DevelopmentPlan.md's
+  # Phase 0 Definition of Done says "CI runs build and tests" — this
+  # workflow only satisfies the build half. Add a `test` job here once
+  # Vitest/Jest + React Testing Library (or similar) is actually wired up
+  # rather than adding a step that runs nothing.
