@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { getHealth, type HealthStatus } from "@/lib/api/client";
+import { resolvePortfolio, type LoadResult } from "@/components/portfolio/PortfolioEditor";
 import { LoadingState } from "@/components/states/LoadingState";
 import { EmptyState } from "@/components/states/EmptyState";
+import { ErrorState } from "@/components/states/ErrorState";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 
 function BackendStatusCard() {
   const [health, setHealth] = useState<HealthStatus | "loading">("loading");
@@ -39,7 +42,7 @@ function BackendStatusCard() {
           <LoadingState compact label="Checking API…" />
         ) : health.reachable ? (
           <p className="text-sm text-[var(--color-ink-muted)]">
-            The API responded to a health check. Ready for Phase 1.
+            The API responded to a health check.
           </p>
         ) : (
           <div className="flex flex-col items-start gap-2">
@@ -61,16 +64,72 @@ function BackendStatusCard() {
   );
 }
 
+function PortfolioStatusCard() {
+  const [state, setState] = useState<LoadResult | { status: "loading" }>({ status: "loading" });
+
+  useEffect(() => {
+    let cancelled = false;
+    resolvePortfolio().then((result) => {
+      if (!cancelled) setState(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state.status === "loading") {
+    return (
+      <div className="rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+        <LoadingState compact label="Loading your portfolio…" />
+      </div>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <ErrorState
+        kind={state.error.kind}
+        message={state.error.body?.message}
+        requestId={state.error.body?.requestId}
+      />
+    );
+  }
+
+  if (!state.doc.profile.displayName) {
+    return (
+      <EmptyState
+        heading="No portfolio yet"
+        description="Your current template and latest deployment will show here once you've started one."
+        action={
+          <Button href="/dashboard/portfolio/editor" variant="primary">
+            Start your portfolio
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+      <h2 className="text-sm font-semibold text-[var(--color-ink-muted)]">Portfolio</h2>
+      <p className="mt-2 font-medium">{state.doc.profile.displayName}</p>
+      <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
+        {state.doc.projects.length} projects · {state.doc.skills.length} skills
+      </p>
+      <Button href="/dashboard/portfolio" variant="secondary" className="mt-4">
+        View portfolio
+      </Button>
+    </div>
+  );
+}
+
 export default function DashboardOverviewPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl">Overview</h1>
       <div className="grid gap-6 md:grid-cols-2">
         <BackendStatusCard />
-        <EmptyState
-          heading="No portfolio yet"
-          description="Your portfolio status, current template, and latest deployment will show here once the portfolio API is connected."
-        />
+        <PortfolioStatusCard />
       </div>
     </div>
   );

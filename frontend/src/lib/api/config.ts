@@ -36,3 +36,16 @@ export const AUTH_PATHS = {
   logout: "/auth/logout",
   me: "/auth/me",
 } as const;
+
+/**
+ * NOT CONFIRMED. PortfolioSchema.md defines the document shape but no
+ * doc defines the actual REST surface — no path, no verb split (single
+ * upsert vs POST-to-create + PATCH-to-update), no confirmation that "my
+ * portfolio" is even a single-resource-per-user model. GET+PUT on one
+ * resource is the simplest assumption that satisfies Phase 2's frontend
+ * scope ("editor, section management") without guessing more than
+ * necessary. Revisit the moment backend Phase 2 (B2) publishes OpenAPI.
+ */
+export const PORTFOLIO_PATHS = {
+  me: "/portfolios/me",
+} as const;
