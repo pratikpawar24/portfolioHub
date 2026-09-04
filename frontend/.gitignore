@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files — .env.example is intentionally NOT listed here; it's a
+# env files — .env.local.example is intentionally NOT listed here; it's a
 # committed template, not a real secret.
 .env
 .env.local
