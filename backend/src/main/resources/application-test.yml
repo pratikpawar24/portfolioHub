@@ -1,17 +1,13 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/portfoliohub}
+    username: ${DB_USERNAME:portfoliohub}
+    password: ${DB_PASSWORD:portfoliohub}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   flyway:
-    enabled: true
-  security:
-    user:
-      name: disabled
-      password: disabled
-app:
-  security:
-    jwt:
-      secret: test-secret-that-is-at-least-32-characters-long-12345
-      issuer: portfoliohub-test
-      access-token-ttl: PT15M
-      refresh-token-ttl: P30D
+    clean-disabled: true
+server:
+  port: 0

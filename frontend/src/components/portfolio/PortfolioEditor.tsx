@@ -2,24 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { getMyPortfolio } from "@/lib/portfolio/api";
-import { EMPTY_PORTFOLIO_DOCUMENT, type PortfolioDocument } from "@/lib/portfolio/types";
+import { EMPTY_PORTFOLIO_RESOURCE, type PortfolioResource } from "@/lib/portfolio/types";
 import { ApiError } from "@/lib/api/client";
 import { LoadingState } from "@/components/states/LoadingState";
 import { ErrorState } from "@/components/states/ErrorState";
 import { PortfolioEditForm } from "./PortfolioEditForm";
 
 export type LoadResult =
-  | { status: "loaded"; doc: PortfolioDocument }
+  | { status: "loaded"; resource: PortfolioResource }
   | { status: "error"; error: ApiError };
 
 export async function resolvePortfolio(): Promise<LoadResult> {
   try {
-    const doc = await getMyPortfolio();
-    return { status: "loaded", doc };
+    const resource = await getMyPortfolio();
+    return { status: "loaded", resource };
   } catch (err) {
     if (err instanceof ApiError && err.kind === "not_found") {
       // No portfolio created yet — that's not an error, it's day one.
-      return { status: "loaded", doc: EMPTY_PORTFOLIO_DOCUMENT };
+      return { status: "loaded", resource: EMPTY_PORTFOLIO_RESOURCE };
     }
     if (err instanceof ApiError) {
       return { status: "error", error: err };
@@ -61,5 +61,5 @@ export function PortfolioEditor() {
     );
   }
 
-  return <PortfolioEditForm initialDocument={state.doc} />;
+  return <PortfolioEditForm initialResource={state.resource} />;
 }

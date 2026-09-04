@@ -1,75 +1,57 @@
 # PortfolioHub Backend
 
-Spring Boot backend for PortfolioHub.
+PortfolioHub is a multi-tenant portfolio publishing platform. Users maintain structured portfolio content, choose or customize templates, publish a public portfolio, and later optionally connect their own hosting provider.
 
-## Current phase
+## Product versions
 
-B0 — Foundation.
+- **V1 — Portfolio Platform:** authentication, portfolio CRUD, template selection, theme customization, preview, responsive templates, publishing and platform hosting.
+- **V2 — Template Ecosystem:** marketplace, GitHub template submissions, creator profiles, likes, usage, fork/remix, attribution and versioning.
+- **V3 — Developer Integrations:** GitHub OAuth/import, resume upload, custom domains, analytics and optional BYO Vercel/Netlify/Cloudflare hosting.
+- **V4 — AI:** resume-to-portfolio, writing assistance, critique, skill-gap analysis and recruiter optimization.
+- **V5 — Ecosystem:** monetization, public API, plugins, organizations, university portfolios and recruiter tooling.
+
+## Engineering phases
+
+B0 → B1 → B2 → B3 → B4 → B5 → B6 → B7 → B8 → B9 → AI/Ecosystem
 
 ## Stack
 
 - Java 21
-- Spring Boot 4.1.1
+- Spring Boot
 - Spring MVC
-- Spring Data JPA
+- Spring Data JPA / Hibernate
 - PostgreSQL
 - Flyway
 - Redis
-- Spring Security baseline
-- OpenAPI / Swagger UI
-- JUnit / Testcontainers
+- Spring Security
+- OpenAPI / Swagger
+- Maven
+- Docker Compose
+- GitHub Actions
 
 ## Local development
 
-1. Start dependencies:
+Prerequisites: Java 21, Maven 3.9+, Docker.
 
 ```bash
 docker compose up -d
-```
-
-2. Run the application:
-
-```bash
-./mvnw spring-boot:run
-```
-
-or:
-
-```bash
 mvn spring-boot:run
 ```
 
-3. Check:
+The default local server runs on `http://localhost:8080`.
 
-- `GET /api/v1/system/ping`
-- `GET /actuator/health`
-- `/swagger-ui.html`
+Useful endpoints:
 
-## Architecture rule
-
-The application starts as a modular monolith. Expensive or untrusted build/deployment work will run outside the API process through isolated workers.
-
+- Health: `/actuator/health`
+- API docs: `/swagger-ui.html`
+- OpenAPI JSON: `/v3/api-docs`
 
 ## CI
 
-Backend CI is defined in `.github/workflows/backend-ci.yml`. It runs Java 21 + Maven `clean verify` on pushes to `main`/`develop` and pull requests to those branches. Integration tests use Testcontainers for PostgreSQL and Redis.
+`.github/workflows/backend-ci.yml` runs on pull requests and pushes to the main development branches. It provisions PostgreSQL and Redis as GitHub Actions services, then runs:
 
-## GitHub Actions
+```bash
+mvn -B -ntp verify
+```
 
-CI is maintained independently from application source code under `.github/workflows/`.
-Backend and frontend have separate workflow files. The backend CI is active now; the frontend workflow template is activated when the frontend is integrated.
-
-## B0 frontend/backend sync
-
-The stable application reachability endpoint is `GET /api/v1/system/ping`. Client applications should use this endpoint rather than depending on the shape of Spring Boot Actuator health responses. See `docs/B0_FRONTEND_BACKEND_SYNC.md`.
-
-## Current development status
-- B0 Foundation: complete at the source/contract level.
-- B1 Authentication & User Domain: implemented in this branch/package; local and CI verification required before merge.
-
-### B1 endpoints
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/refresh`
-- `POST /api/v1/auth/logout`
-- `GET /api/v1/auth/me`
+No production credentials or external hosting secrets belong in the repository. Those are added only when the deployment phase requires them.

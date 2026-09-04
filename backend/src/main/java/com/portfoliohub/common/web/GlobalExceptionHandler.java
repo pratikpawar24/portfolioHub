@@ -26,12 +26,12 @@ public class GlobalExceptionHandler {
         List<ApiError.Detail> details = ex.getBindingResult().getFieldErrors().stream()
                 .map(e -> new ApiError.Detail(e.getField(), e.getDefaultMessage()))
                 .toList();
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error("VALIDATION_ERROR", "Request validation failed", details));
+        return ResponseEntity.badRequest().body(error("VALIDATION_ERROR", "Request validation failed", details));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraint(ConstraintViolationException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error("VALIDATION_ERROR", ex.getMessage(), List.of()));
+        return ResponseEntity.badRequest().body(error("VALIDATION_ERROR", ex.getMessage(), List.of()));
     }
 
     @ExceptionHandler(Exception.class)

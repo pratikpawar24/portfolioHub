@@ -35,7 +35,7 @@ export default function PortfolioOverviewPage() {
         />
       ) : null}
 
-      {state.status === "loaded" && !state.doc.profile.displayName ? (
+      {state.status === "loaded" && !state.resource.content.profile.displayName ? (
         <EmptyState
           heading="Nothing written yet"
           description="Add your profile, links, skills and projects to get started."
@@ -47,22 +47,32 @@ export default function PortfolioOverviewPage() {
         />
       ) : null}
 
-      {state.status === "loaded" && state.doc.profile.displayName ? (
+      {state.status === "loaded" && state.resource.content.profile.displayName ? (
         <div className="flex flex-col gap-4 rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
           <div>
-            <p className="text-lg font-semibold">{state.doc.profile.displayName}</p>
-            {state.doc.profile.headline ? (
-              <p className="text-sm text-[var(--color-ink-muted)]">{state.doc.profile.headline}</p>
+            <p className="text-lg font-semibold">{state.resource.content.profile.displayName}</p>
+            {state.resource.content.profile.headline ? (
+              <p className="text-sm text-[var(--color-ink-muted)]">
+                {state.resource.content.profile.headline}
+              </p>
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge>{state.doc.skills.length} skills</Badge>
-            <Badge>{state.doc.projects.length} projects</Badge>
-            <Badge>{state.doc.links.length} links</Badge>
+            <Badge>{state.resource.content.skills.length} skills</Badge>
+            <Badge>{state.resource.content.projects.length} projects</Badge>
+            <Badge>{state.resource.content.links.length} links</Badge>
+            <Badge tone={state.resource.activeTemplateVersionId ? "live" : "warn"}>
+              {state.resource.activeTemplateVersionId ? "template applied" : "no template"}
+            </Badge>
           </div>
-          <Button href="/dashboard/portfolio/editor" variant="secondary" className="self-start">
-            Edit portfolio
-          </Button>
+          <div className="flex gap-3">
+            <Button href="/dashboard/portfolio/editor" variant="secondary">
+              Edit portfolio
+            </Button>
+            <Button href="/dashboard/portfolio/templates" variant="secondary">
+              {state.resource.activeTemplateVersionId ? "Change template" : "Choose a template"}
+            </Button>
+          </div>
         </div>
       ) : null}
     </div>

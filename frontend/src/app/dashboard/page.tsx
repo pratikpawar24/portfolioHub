@@ -95,7 +95,7 @@ function PortfolioStatusCard() {
     );
   }
 
-  if (!state.doc.profile.displayName) {
+  if (!state.resource.content.profile.displayName) {
     return (
       <EmptyState
         heading="No portfolio yet"
@@ -112,10 +112,15 @@ function PortfolioStatusCard() {
   return (
     <div className="rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
       <h2 className="text-sm font-semibold text-[var(--color-ink-muted)]">Portfolio</h2>
-      <p className="mt-2 font-medium">{state.doc.profile.displayName}</p>
+      <p className="mt-2 font-medium">{state.resource.content.profile.displayName}</p>
       <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-        {state.doc.projects.length} projects · {state.doc.skills.length} skills
+        {state.resource.content.projects.length} projects · {state.resource.content.skills.length} skills
       </p>
+      {!state.resource.activeTemplateVersionId ? (
+        <div className="mt-2">
+          <Badge tone="warn">No template selected</Badge>
+        </div>
+      ) : null}
       <Button href="/dashboard/portfolio" variant="secondary" className="mt-4">
         View portfolio
       </Button>

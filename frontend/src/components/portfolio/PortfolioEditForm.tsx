@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { portfolioEditFormSchema, type PortfolioEditFormValues } from "@/lib/validation/portfolio";
 import { applyServerFieldErrors } from "@/lib/validation/applyServerFieldErrors";
 import { documentToFormValues, formValuesToDocument } from "@/lib/portfolio/formMapping";
-import { saveMyPortfolio } from "@/lib/portfolio/api";
-import type { PortfolioDocument } from "@/lib/portfolio/types";
+import { saveMyPortfolioContent } from "@/lib/portfolio/api";
+import type { PortfolioResource } from "@/lib/portfolio/types";
 import { ApiError } from "@/lib/api/client";
 import { ProfileFields } from "./ProfileFields";
 import { LinksFields } from "./LinksFields";
@@ -29,8 +29,8 @@ const MAPPABLE_FIELDS = [
   "profile.availability",
 ] as const;
 
-export function PortfolioEditForm({ initialDocument }: { initialDocument: PortfolioDocument }) {
-  const [baseDocument, setBaseDocument] = useState(initialDocument);
+export function PortfolioEditForm({ initialResource }: { initialResource: PortfolioResource }) {
+  const [resource, setResource] = useState(initialResource);
   const [saveError, setSaveError] = useState<ApiError | null>(null);
   const [justSaved, setJustSaved] = useState(false);
 
@@ -43,16 +43,16 @@ export function PortfolioEditForm({ initialDocument }: { initialDocument: Portfo
     formState: { errors, isSubmitting, isDirty },
   } = useForm<PortfolioEditFormValues>({
     resolver: zodResolver(portfolioEditFormSchema),
-    defaultValues: documentToFormValues(initialDocument),
+    defaultValues: documentToFormValues(initialResource.content),
   });
 
   async function onSubmit(values: PortfolioEditFormValues) {
     setSaveError(null);
     setJustSaved(false);
     try {
-      const saved = await saveMyPortfolio(formValuesToDocument(values, baseDocument));
-      setBaseDocument(saved);
-      reset(documentToFormValues(saved));
+      const savedContent = await saveMyPortfolioContent(formValuesToDocument(values, resource.content));
+      setResource((prev) => ({ ...prev, content: savedContent }));
+      reset(documentToFormValues(savedContent));
       setJustSaved(true);
     } catch (err) {
       if (err instanceof ApiError) {
@@ -66,6 +66,15 @@ export function PortfolioEditForm({ initialDocument }: { initialDocument: Portfo
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-10 pb-24">
+      <div className="flex items-center justify-between rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3 text-sm">
+        <span className="text-[var(--color-ink-muted)]">
+          {resource.activeTemplateVersionId ? "Template applied" : "No template selected yet"}
+        </span>
+        <Button href="/dashboard/portfolio/templates" variant="secondary">
+          {resource.activeTemplateVersionId ? "Change template" : "Choose a template"}
+        </Button>
+      </div>
+
       <ProfileFields register={register} errors={errors} />
       <LinksFields control={control} register={register} errors={errors} />
       <SkillsFields control={control} register={register} errors={errors} />

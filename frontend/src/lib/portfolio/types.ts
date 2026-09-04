@@ -60,6 +60,29 @@ export interface PortfolioDocument {
   customSections: unknown[];
 }
 
+/**
+ * Corrects a Phase 2 assumption. DatabaseDesign.md §2 shows `portfolios`
+ * as its own row — id, slug, title, status, active_template_version_id,
+ * current_draft_revision_id, published_revision_id — distinct from
+ * `portfolio_revisions.content` (the JSONB matching PortfolioDocument
+ * above). Phase 2 treated GET /portfolios/me as if it returned
+ * PortfolioDocument directly; it almost certainly returns this entity
+ * instead, since Phase 3 (template selection) needs
+ * activeTemplateVersionId and that field isn't part of the content
+ * schema. See PHASE_3_NOTES.md.
+ */
+export interface PortfolioMeta {
+  id: string;
+  slug: string;
+  title: string;
+  status: string; // real enum unconfirmed
+  activeTemplateVersionId: string | null;
+}
+
+export interface PortfolioResource extends PortfolioMeta {
+  content: PortfolioDocument;
+}
+
 export const EMPTY_PORTFOLIO_DOCUMENT: PortfolioDocument = {
   schemaVersion: "1.0",
   profile: { displayName: "" },
@@ -73,4 +96,13 @@ export const EMPTY_PORTFOLIO_DOCUMENT: PortfolioDocument = {
   services: [],
   testimonials: [],
   customSections: [],
+};
+
+export const EMPTY_PORTFOLIO_RESOURCE: PortfolioResource = {
+  id: "",
+  slug: "",
+  title: "",
+  status: "draft",
+  activeTemplateVersionId: null,
+  content: EMPTY_PORTFOLIO_DOCUMENT,
 };

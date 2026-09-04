@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: portfoliohub
       POSTGRES_USER: portfoliohub
-      POSTGRES_PASSWORD: portfoliohub
+      POSTGRES_PASSWORD: PratikOwner
     ports:
       - "5432:5432"
     volumes:

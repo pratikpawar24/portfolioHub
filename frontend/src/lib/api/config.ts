@@ -38,14 +38,31 @@ export const AUTH_PATHS = {
 } as const;
 
 /**
- * NOT CONFIRMED. PortfolioSchema.md defines the document shape but no
- * doc defines the actual REST surface — no path, no verb split (single
- * upsert vs POST-to-create + PATCH-to-update), no confirmation that "my
- * portfolio" is even a single-resource-per-user model. GET+PUT on one
- * resource is the simplest assumption that satisfies Phase 2's frontend
- * scope ("editor, section management") without guessing more than
- * necessary. Revisit the moment backend Phase 2 (B2) publishes OpenAPI.
+ * NOT CONFIRMED. Revised from the original Phase 2 guess after cross-
+ * referencing DatabaseDesign.md §2: `portfolios` (entity: id, slug,
+ * title, status, active_template_version_id, revision pointers) is a
+ * separate row from `portfolio_revisions.content` (the JSONB matching
+ * PortfolioDocument). `me` is assumed to return the entity with content
+ * embedded (PortfolioResource) rather than content alone — a common
+ * enough REST pattern, but still a guess. `content` and `activeTemplate`
+ * are split out so saving an edit doesn't require re-sending template
+ * linkage, and vice versa.
  */
 export const PORTFOLIO_PATHS = {
   me: "/portfolios/me",
+  content: "/portfolios/me/content",
+  activeTemplate: "/portfolios/me/active-template",
+} as const;
+
+/**
+ * NOT CONFIRMED. Derived from DatabaseDesign.md's `templates` /
+ * `template_versions` tables plus the catalogue/detail fields
+ * FrontendDevelopmentPrompt.md §7 asks for (preview, name, creator,
+ * framework, tags/category, compatible schema, license, version). No
+ * doc defines the actual registry API response shape — see
+ * lib/templates/types.ts and PHASE_3_NOTES.md.
+ */
+export const TEMPLATE_PATHS = {
+  list: "/templates",
+  detail: (slug: string) => `/templates/${slug}`,
 } as const;
