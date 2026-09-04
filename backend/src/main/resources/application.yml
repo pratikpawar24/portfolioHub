@@ -45,6 +45,9 @@ springdoc:
 app:
   api:
     version: v1
+  publishing:
+    workspace-root: ${PUBLISHING_WORKSPACE_ROOT:${user.dir}/data/publishing/workspaces}
+    published-root: ${PUBLISHED_SITES_ROOT:${user.dir}/data/publishing/sites}
   email:
     from-address: ${EMAIL_FROM_ADDRESS:no-reply@example.com}
     from-name: ${EMAIL_FROM_NAME:PortfolioHub}

@@ -1,2 +1,10 @@
 package com.portfoliohub.portfolio.entity;
-public enum PortfolioStatus { DRAFT, PUBLISHED, UNPUBLISHED, ARCHIVED }
+
+public enum PortfolioStatus {
+    DRAFT,
+    PUBLISHING,
+    PUBLISHED,
+    PUBLISH_FAILED,
+    UNPUBLISHED,
+    ARCHIVED
+}

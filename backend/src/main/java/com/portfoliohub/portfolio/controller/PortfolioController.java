@@ -1,6 +1,9 @@
 package com.portfoliohub.portfolio.controller;
 
-import com.portfoliohub.portfolio.dto.*;
+import com.portfoliohub.portfolio.dto.CreatePortfolioRequest;
+import com.portfoliohub.portfolio.dto.PortfolioResponse;
+import com.portfoliohub.portfolio.dto.PortfolioSummaryResponse;
+import com.portfoliohub.portfolio.dto.UpdatePortfolioRequest;
 import com.portfoliohub.portfolio.service.PortfolioService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -17,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/portfolios")
 public class PortfolioController {
-
     private final PortfolioService service;
 
     public PortfolioController(PortfolioService service) {
@@ -26,9 +28,8 @@ public class PortfolioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PortfolioResponse create(
-            @AuthenticationPrincipal Jwt jwt,
-            @Valid @RequestBody CreatePortfolioRequest request) {
+    public PortfolioResponse create(@AuthenticationPrincipal Jwt jwt,
+                                    @Valid @RequestBody CreatePortfolioRequest request) {
         return service.create(UUID.fromString(jwt.getSubject()), request);
     }
 
@@ -41,39 +42,20 @@ public class PortfolioController {
     }
 
     @GetMapping("/{id}")
-    public PortfolioResponse get(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id) {
+    public PortfolioResponse get(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
         return service.get(UUID.fromString(jwt.getSubject()), id);
     }
 
     @PutMapping("/{id}")
-    public PortfolioResponse update(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id,
-            @Valid @RequestBody UpdatePortfolioRequest request) {
+    public PortfolioResponse update(@AuthenticationPrincipal Jwt jwt,
+                                    @PathVariable UUID id,
+                                    @Valid @RequestBody UpdatePortfolioRequest request) {
         return service.update(UUID.fromString(jwt.getSubject()), id, request);
-    }
-
-    @PostMapping("/{id}/publish")
-    public PortfolioResponse publish(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id) {
-        return service.publish(UUID.fromString(jwt.getSubject()), id);
-    }
-
-    @PostMapping("/{id}/unpublish")
-    public PortfolioResponse unpublish(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id) {
-        return service.unpublish(UUID.fromString(jwt.getSubject()), id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void archive(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id) {
+    public void archive(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
         service.archive(UUID.fromString(jwt.getSubject()), id);
     }
 }

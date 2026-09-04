@@ -72,6 +72,9 @@ public class PortfolioService {
         if (p.getStatus() == PortfolioStatus.ARCHIVED) {
             throw notFound();
         }
+        if (p.getStatus() == PortfolioStatus.PUBLISHING) {
+            throw api(HttpStatus.CONFLICT, "PUBLISH_IN_PROGRESS", "Portfolio cannot be edited while publishing is in progress");
+        }
         validateContent(r.schemaVersion(), r.content());
 
         if (p.getActiveTemplateVersionId() != null) {

@@ -17,5 +17,9 @@ app:
       resend-cooldown-seconds: 0
       max-attempts: 5
       otp-secret: test-secret
+  publishing:
+    workspace-root: ${java.io.tmpdir}/portfoliohub-test/workspaces
+    published-root: ${java.io.tmpdir}/portfoliohub-test/sites
+
 server:
   port: 0
