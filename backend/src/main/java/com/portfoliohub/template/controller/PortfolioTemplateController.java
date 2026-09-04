@@ -4,6 +4,7 @@ import com.portfoliohub.template.dto.SelectTemplateRequest;
 import com.portfoliohub.template.dto.TemplateVersionResponse;
 import com.portfoliohub.template.entity.TemplateVersion;
 import com.portfoliohub.template.service.TemplateService;
+import com.portfoliohub.marketplace.service.MarketplaceService;
 import com.portfoliohub.portfolio.entity.Portfolio;
 import com.portfoliohub.portfolio.entity.PortfolioStatus;
 import com.portfoliohub.portfolio.repository.PortfolioRepository;
@@ -22,10 +23,12 @@ import java.util.UUID;
 public class PortfolioTemplateController {
     private final PortfolioRepository portfolios;
     private final TemplateService templates;
+    private final MarketplaceService marketplace;
 
-    public PortfolioTemplateController(PortfolioRepository portfolios, TemplateService templates) {
+    public PortfolioTemplateController(PortfolioRepository portfolios, TemplateService templates, MarketplaceService marketplace) {
         this.portfolios = portfolios;
         this.templates = templates;
+        this.marketplace = marketplace;
     }
 
     @PutMapping("/{portfolioId}/template")
@@ -47,8 +50,15 @@ public class PortfolioTemplateController {
             throw new ApiException(HttpStatus.CONFLICT, "NO_PORTFOLIO_SCHEMA", "Portfolio has no draft schema version");
         }
         TemplateVersion version = templates.requireCompatibleApprovedVersion(request.templateVersionId(), schemaVersion);
-        portfolio.setActiveTemplateVersionId(version.getId());
-        portfolios.save(portfolio);
+        UUID previousVersionId = portfolio.getActiveTemplateVersionId();
+        if (!version.getId().equals(previousVersionId)) {
+            portfolio.setActiveTemplateVersionId(version.getId());
+            portfolios.save(portfolio);
+            if (previousVersionId != null) {
+                marketplace.refreshUsageForTemplateVersion(previousVersionId);
+            }
+            marketplace.refreshUsageForTemplateVersion(version.getId());
+        }
         return templates.getApprovedVersion(version.getId());
     }
 
@@ -64,7 +74,11 @@ public class PortfolioTemplateController {
         if (portfolio.getStatus() == PortfolioStatus.ARCHIVED) {
             throw new ApiException(HttpStatus.CONFLICT, "PORTFOLIO_ARCHIVED", "Archived portfolios cannot change templates");
         }
+        UUID previousVersionId = portfolio.getActiveTemplateVersionId();
         portfolio.setActiveTemplateVersionId(null);
         portfolios.save(portfolio);
+        if (previousVersionId != null) {
+            marketplace.refreshUsageForTemplateVersion(previousVersionId);
+        }
     }
 }

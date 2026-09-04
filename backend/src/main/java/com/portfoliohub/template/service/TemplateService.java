@@ -7,6 +7,7 @@ import com.portfoliohub.template.dto.*;
 import com.portfoliohub.template.entity.*;
 import com.portfoliohub.template.repository.TemplateRepository;
 import com.portfoliohub.template.repository.TemplateVersionRepository;
+import com.portfoliohub.marketplace.service.MarketplaceService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,11 +26,13 @@ public class TemplateService {
     private final TemplateRepository templates;
     private final TemplateVersionRepository versions;
     private final UserRepository users;
+    private final MarketplaceService marketplace;
 
-    public TemplateService(TemplateRepository templates, TemplateVersionRepository versions, UserRepository users) {
+    public TemplateService(TemplateRepository templates, TemplateVersionRepository versions, UserRepository users, MarketplaceService marketplace) {
         this.templates = templates;
         this.versions = versions;
         this.users = users;
+        this.marketplace = marketplace;
     }
 
     @Transactional(readOnly = true)
@@ -62,6 +65,7 @@ public class TemplateService {
         template.setName(request.name());
         template.setDescription(request.description());
         template.setCategory(request.category());
+        template.setFramework(request.manifest().path("framework").asText());
         template.setLicense(request.license());
         template.setRepositoryUrl(request.repositoryUrl());
         template.setVisibility(request.visibility());
@@ -79,6 +83,7 @@ public class TemplateService {
         version.setPreviewReference(request.previewReference());
         version.setStatus(TemplateVersionStatus.APPROVED);
         versions.save(version);
+        marketplace.initializeStats(template);
 
         return response(template);
     }

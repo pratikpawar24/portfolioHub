@@ -6,6 +6,7 @@ import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -56,8 +57,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/refresh"
+                                "/api/v1/auth/refresh",
+                                "/api/v1/auth/verify-email",
+                                "/api/v1/auth/resend-verification"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/templates", "/api/v1/templates/*", "/api/v1/templates/versions/**", "/api/v1/creators/**").permitAll()
                         .requestMatchers("/api/v1/system/ping", "/api/v1/public/portfolios/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth ->

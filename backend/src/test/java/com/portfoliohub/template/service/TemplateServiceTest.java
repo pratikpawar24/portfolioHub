@@ -8,6 +8,7 @@ import com.portfoliohub.template.entity.TemplateVersionStatus;
 import com.portfoliohub.template.entity.TemplateVisibility;
 import com.portfoliohub.template.repository.TemplateRepository;
 import com.portfoliohub.template.repository.TemplateVersionRepository;
+import com.portfoliohub.marketplace.service.MarketplaceService;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -22,7 +23,7 @@ class TemplateServiceTest {
     private final TemplateRepository templates = mock(TemplateRepository.class);
     private final TemplateVersionRepository versions = mock(TemplateVersionRepository.class);
     private final UserRepository users = mock(UserRepository.class);
-    private final TemplateService service = new TemplateService(templates, versions, users);
+    private final TemplateService service = new TemplateService(templates, versions, users, mock(MarketplaceService.class));
     private final JsonMapper jsonMapper = JsonMapper.builder().build();
 
     @Test

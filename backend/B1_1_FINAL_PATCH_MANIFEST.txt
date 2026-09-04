@@ -1,0 +1,12 @@
+PortfolioHub B1.1 Final Consolidated Patch
+
+Includes:
+- Email verification OTP flow and V8 migration
+- Brevo SMTP transactional email sender
+- Jakarta Mail API + Angus Mail dependencies
+- Checked exception handling in SMTP sender
+- Test-only transactional email sender; no SMTP network calls in tests
+- Testcontainers 2.0.5 artifact IDs corrected to testcontainers-junit-jupiter and testcontainers-postgresql
+- B1.1 application/test configuration and documentation
+
+Apply all files from this patch over the existing backend.

@@ -9,5 +9,13 @@ spring:
       port: ${REDIS_PORT:6379}
   flyway:
     clean-disabled: true
+app:
+  email:
+    from-address: test@example.invalid
+    verification:
+      expiry-minutes: 10
+      resend-cooldown-seconds: 0
+      max-attempts: 5
+      otp-secret: test-secret
 server:
   port: 0

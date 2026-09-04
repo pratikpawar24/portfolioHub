@@ -37,6 +37,9 @@ public class User {
     @Column(nullable = false)
     private Instant updatedAt;
 
+    @Column(name = "email_verified_at")
+    private Instant emailVerifiedAt;
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
@@ -68,6 +71,8 @@ public class User {
     public UserStatus getStatus() { return status; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public Instant getEmailVerifiedAt() { return emailVerifiedAt; }
+    public boolean isEmailVerified() { return emailVerifiedAt != null; }
 
     public void setEmail(String email) { this.email = normalize(email); }
     public void setUsername(String username) { this.username = username; }
@@ -75,4 +80,5 @@ public class User {
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public void setRole(UserRole role) { this.role = role; }
     public void setStatus(UserStatus status) { this.status = status; }
+    public void setEmailVerifiedAt(Instant emailVerifiedAt) { this.emailVerifiedAt = emailVerifiedAt; }
 }

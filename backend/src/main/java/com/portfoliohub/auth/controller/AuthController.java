@@ -3,6 +3,7 @@ package com.portfoliohub.auth.controller;
 import com.portfoliohub.auth.dto.*;
 import com.portfoliohub.auth.security.UserPrincipal;
 import com.portfoliohub.auth.service.AuthService;
+import com.portfoliohub.auth.service.EmailVerificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,15 +14,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
+    private final EmailVerificationService emailVerificationService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, EmailVerificationService emailVerificationService) {
         this.authService = authService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+    public RegistrationResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/verify-email")
+    public UserResponse verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        return UserResponse.from(emailVerificationService.verify(request.email(), request.otp()));
+    }
+
+    @PostMapping("/resend-verification")
+    public MessageResponse resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        emailVerificationService.resend(request.email());
+        return new MessageResponse("If the account exists and is not verified, a new verification code has been sent.");
     }
 
     @PostMapping("/login")

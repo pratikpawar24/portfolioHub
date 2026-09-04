@@ -45,6 +45,14 @@ springdoc:
 app:
   api:
     version: v1
+  email:
+    from-address: ${EMAIL_FROM_ADDRESS:no-reply@example.com}
+    from-name: ${EMAIL_FROM_NAME:PortfolioHub}
+    verification:
+      expiry-minutes: ${EMAIL_OTP_EXPIRY_MINUTES:10}
+      resend-cooldown-seconds: ${EMAIL_OTP_RESEND_COOLDOWN_SECONDS:60}
+      max-attempts: ${EMAIL_OTP_MAX_ATTEMPTS:5}
+      otp-secret: ${OTP_HASH_SECRET:${JWT_SECRET:change-this-local-only-secret-at-least-32-bytes}}
   security:
     jwt:
       issuer: ${JWT_ISSUER:portfoliohub}

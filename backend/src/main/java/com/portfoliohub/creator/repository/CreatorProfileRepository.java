@@ -1,0 +1,11 @@
+package com.portfoliohub.creator.repository;
+
+import com.portfoliohub.creator.entity.CreatorProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface CreatorProfileRepository extends JpaRepository<CreatorProfile, UUID> {
+    Optional<CreatorProfile> findByUserId(UUID userId);
+}

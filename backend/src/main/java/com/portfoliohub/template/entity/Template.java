@@ -29,6 +29,9 @@ public class Template {
     @Column(length = 60)
     private String category;
 
+    @Column(nullable = false, length = 40)
+    private String framework;
+
     @Column(nullable = false, length = 100)
     private String license;
 
@@ -42,6 +45,10 @@ public class Template {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private TemplateStatus status = TemplateStatus.DRAFT;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "derivation_type", nullable = false, length = 20)
+    private TemplateDerivationType derivationType = TemplateDerivationType.ORIGINAL;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_template_id")
@@ -84,10 +91,12 @@ public class Template {
     public String getName() { return name; }
     public String getDescription() { return description; }
     public String getCategory() { return category; }
+    public String getFramework() { return framework; }
     public String getLicense() { return license; }
     public String getRepositoryUrl() { return repositoryUrl; }
     public TemplateVisibility getVisibility() { return visibility; }
     public TemplateStatus getStatus() { return status; }
+    public TemplateDerivationType getDerivationType() { return derivationType; }
     public Template getParentTemplate() { return parentTemplate; }
     public Template getOriginalTemplate() { return originalTemplate; }
     public Instant getCreatedAt() { return createdAt; }
@@ -98,10 +107,12 @@ public class Template {
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
     public void setCategory(String category) { this.category = category; }
+    public void setFramework(String framework) { this.framework = framework; }
     public void setLicense(String license) { this.license = license; }
     public void setRepositoryUrl(String repositoryUrl) { this.repositoryUrl = repositoryUrl; }
     public void setVisibility(TemplateVisibility visibility) { this.visibility = visibility; }
     public void setStatus(TemplateStatus status) { this.status = status; }
+    public void setDerivationType(TemplateDerivationType derivationType) { this.derivationType = derivationType; }
     public void setParentTemplate(Template parentTemplate) { this.parentTemplate = parentTemplate; }
     public void setOriginalTemplate(Template originalTemplate) { this.originalTemplate = originalTemplate; }
 }
