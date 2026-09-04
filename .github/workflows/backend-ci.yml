@@ -58,6 +58,7 @@ jobs:
           cache: maven
 
       - name: Build and test
+        working-directory: ./backend
         run: mvn -B -ntp verify
 
       - name: Upload test reports
